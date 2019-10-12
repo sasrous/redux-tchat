@@ -12,7 +12,7 @@ export const initialState = {
 		selectedBet: {
 			market: '',
 			picks: '',
-			odds: { id: '', value: 0, bookieId: '' }
+			odds: { id: '', value: '', bookieId: '' }
 		}
 	},
 	isLoading: false

@@ -1,5 +1,14 @@
 @import './variables.scss';
 
 .content {
+	margin: 40px;
+	position: relative;
+}
+html body {
+	background-color: $gray-1;
+	height: 100%;
 	width: 100%;
+}
+p {
+	color: $gray-3;
 }

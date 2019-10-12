@@ -1,7 +1,6 @@
 import * as actions from './actions';
 
 import * as formDataService from '../../services/formData-service';
-import { async } from 'q';
 
 export const setFormData = (formData) => (dispatch) => {
 	dispatch(actions.formDataSetData(formData));

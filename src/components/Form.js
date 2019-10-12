@@ -4,6 +4,12 @@ import './form.scss';
 import { connect } from 'react-redux';
 import { formDataOperations } from '../redux/ducks/formData';
 
+//select
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
 const { getFormData, setQuery, setBet, setFormData } = formDataOperations;
 
 const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => {
@@ -13,6 +19,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 		setQuery(event.target.value);
 		getFormData(event.target.value);
 		setFormData();
+		saveBetDetail();
 	};
 	const selectMatch = (match) => {
 		setQuery(match.name);
@@ -21,6 +28,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 	const clearMatch = () => {
 		setFormData();
 		setQuery('');
+		saveBetDetail();
 	};
 	const saveBetDetail = (label, value) => {
 		setBet({
@@ -28,58 +36,73 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 			value: value
 		});
 	};
+	const handleOddSubmit = (e) => {
+		const { bets } = selectedMatch;
+
+		bets.map((bet) => {
+			console.log(bet, e);
+			if (bet.bookieId === e) {
+				saveBetDetail('odds', {
+					bookieId: e,
+					id: selectedBet.picks,
+					value: bet.odds[selectedBet.picks - 1].value
+				});
+			}
+		});
+	};
 	const renderAutocomplete = () => {
-		return formData && formData.length > 0 && query.length > 0 ? (
-			formData.map((match) => (
-				<button
-					key={match.name}
-					className={
-						match.name === selectedMatch.name ? (
-							'autocomplete__suggestion--selected autocomplete__suggestion'
-						) : (
-							'autocomplete__suggestion'
-						)
-					}
-					onClick={() => selectMatch(match)}
-				>
-					{match.name}
-				</button>
-			))
-		) : (
-			<div>no matches placeholder</div>
-		);
+		return formData && formData.length > 0 && query.length > 0
+			? formData.map((match) => (
+					<button
+						key={match.name}
+						className={
+							match.name === selectedMatch.name ? (
+								'autocomplete__suggestion--selected autocomplete__suggestion'
+							) : (
+								'autocomplete__suggestion'
+							)
+						}
+						onClick={() => selectMatch(match)}
+					>
+						{match.name}
+					</button>
+				))
+			: null;
 	};
 	const renderDropdown = (label) => {
 		if (selectedMatch.bets && selectedMatch.bets.length > 0) {
 			const { bets } = selectedMatch;
 			switch (label) {
 				case 'market':
-					return <button onClick={() => saveBetDetail(label, bets[0][label])}> {bets[0][label]}</button>;
-
+					let marketarr = [];
+					return bets.map((bet) => {
+						//check for fuplicates
+						if (marketarr.indexOf(bet.market) < 0) {
+							marketarr.push(bet.market);
+							return <MenuItem value={bet.market}>{bet.market}</MenuItem>;
+						}
+					});
 				case 'picks':
-					return bets[0][label][0]
-						.split(', ')
-						.map((pick) => <button onClick={() => saveBetDetail(label, pick)}> {pick}</button>);
+					let pickarr = [];
+					return bets.map((bet) => {
+						return bet.picks[0].split(', ').map((pick) => {
+							if (pickarr.indexOf(pick) < 0) {
+								pickarr.push(pick);
+								return <MenuItem value={pick}>{pick}</MenuItem>;
+							}
+						});
+					});
 
 				case 'odds':
-					return selectedMatch.bets.map((bet) => {
-						return bet[label].map((odd) => {
-							console.log(odd, selectedBet.picks, odd.id === selectedBet.picks);
+					return bets.map((bet) => {
+						return bet.odds.map((odd) => {
 							if (odd.id === selectedBet.picks) {
 								return (
-									<button
-										onClick={() =>
-											saveBetDetail(label, {
-												id: odd.id,
-												value: odd.value,
-												bookieId: bet.bookieId
-											})}
-										id={odd.id}
-									>
-										{odd.value.toString()}
-									</button>
+									<MenuItem
+										value={bet.bookieId}
+									>{`${odd.value.toString()} - ${bet.bookieId}`}</MenuItem>
 								);
-							}
+							} else return;
 						});
 					});
 				default:
@@ -89,49 +112,97 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 	};
 	return (
 		<div className="content">
-			<CardTitle>APUESTA</CardTitle>
+			<CardTitle className="main-title">Apuesta</CardTitle>
 			<Row>
-				<Col xs={12} xl={12}>
+				<Col xs={12} md={4}>
 					<p>Partido</p>
-					<input placeholder=" - " value={query} onChange={handleChange} />
-					{renderAutocomplete()}
-					<button onClick={() => clearMatch()}>X</button>
+					<div className="autocomplete">
+						<input
+							placeholder="ej: Barcelona - Madrid"
+							value={query}
+							onChange={handleChange}
+							className="autocomplete__input"
+						/>
+						<button className="autocomplete__clear-btn" onClick={() => clearMatch()}>
+							X
+						</button>
+						<div className={query.length === 0 ? 'autocomplete__wrapper--hidden' : 'autocomplete__wrapper'}>
+							{selectedMatch.name ? null : renderAutocomplete()}
+						</div>
+					</div>
 				</Col>
 			</Row>
 			<Row>
-				<Col xs={4} xl={4}>
-					<p>Deporte</p>
-					<input placeholder="selecciona un patido" value={selectedMatch.sport} readOnly />
+				<Col xs={12} md={4}>
+					<div className="autofill">
+						<p>Deporte</p>
+						<input disabled placeholder="selecciona un patido" value={selectedMatch.sport} readOnly />
+					</div>
 				</Col>
-				<Col xs={4} xl={4}>
-					<p>Pais</p>
-					<input placeholder="selecciona un partido" value={selectedMatch.country} readOnly />
+				<Col xs={12} md={4}>
+					<div className="autofill">
+						<p>Pais</p>
+						<input disabled placeholder="selecciona un partido" value={selectedMatch.country} readOnly />
+					</div>
 				</Col>
-				<Col xs={4} xl={4}>
-					<p>Torneo</p>
-					<input placeholder="selecciona un partido" value={selectedMatch.competition} readOnly />
+				<Col xs={12} md={4}>
+					<div className="autofill">
+						<p>Torneo</p>
+						<input
+							disabled
+							placeholder="selecciona un partido"
+							value={selectedMatch.competition}
+							readOnly
+						/>
+					</div>
 				</Col>
 			</Row>
 			<CardTitle>Pick</CardTitle>
 			<Row>
-				<Col xs={4} xl={4}>
-					<p>Mercado</p>
-					<input placeholder="..." value={selectedBet.market} readOnly />
-					{renderDropdown('market')}
+				<Col xs={12} md={4} className="dropdown">
+					<FormControl disabled={!selectedMatch.name}>
+						<InputLabel htmlFor="market-id">Market</InputLabel>
+						<Select
+							value={selectedBet.market}
+							onChange={(e) => saveBetDetail('market', e.target.value)}
+							inputProps={{
+								name: 'market',
+								id: 'market-id'
+							}}
+						>
+							{renderDropdown('market')}
+						</Select>
+					</FormControl>
 				</Col>
-				<Col xs={4} xl={4}>
-					<p>Pick</p>
-					<input placeholder="..." value={selectedBet.picks} readOnly />
-					{renderDropdown('picks')}
+				<Col xs={12} md={4} className="dropdown">
+					<FormControl disabled={!selectedBet.market}>
+						<InputLabel htmlFor="market-id">Pick</InputLabel>
+						<Select
+							value={selectedBet.picks}
+							onChange={(e) => saveBetDetail('picks', e.target.value)}
+							inputProps={{
+								name: 'picks',
+								id: 'picks-id'
+							}}
+						>
+							{renderDropdown('picks')}
+						</Select>
+					</FormControl>
 				</Col>
-				<Col xs={4} xl={4}>
-					<p>Odds</p>
-					<input
-						placeholder="..."
-						value={`${selectedBet.odds.value} - ${selectedBet.odds.bookieId}`}
-						readOnly
-					/>
-					{renderDropdown('odds')}
+				<Col xs={12} md={4} className="dropdown">
+					<FormControl disabled={!selectedBet.picks}>
+						<InputLabel htmlFor="odds-id">Odds</InputLabel>
+						<Select
+							value={selectedBet.odds.bookieId}
+							onChange={(e) => handleOddSubmit(e.target.value)}
+							inputProps={{
+								name: 'odds',
+								id: 'odds-id'
+							}}
+						>
+							{renderDropdown('odds')}
+						</Select>
+					</FormControl>
 				</Col>
 			</Row>
 		</div>
