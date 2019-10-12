@@ -22,3 +22,6 @@ export const getFormData = (query) => async (dispatch) => {
 		dispatch(actions.formDataGetError(error));
 	}
 };
+export const setBet = (data) => {
+	return actions.formDataSetBet(data);
+};

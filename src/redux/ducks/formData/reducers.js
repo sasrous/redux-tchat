@@ -41,6 +41,16 @@ const formDataReducer = (state = initialState, action) => {
 				formData: action.data,
 				isLoading: false
 			};
+		case types.FORMDATA_SET_BET:
+			const newBet = {
+				...state.selectedBet,
+				[action.data.label]: action.data.value
+			};
+			return {
+				...state,
+				selectedBet: newBet,
+				isLoading: false
+			};
 
 		default:
 			return state;

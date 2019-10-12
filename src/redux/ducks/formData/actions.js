@@ -19,9 +19,14 @@ export const formDataSetData = (formData) => ({
 	data: formData
 });
 export const formDataSetQuery = (query) => {
-	console.log(query);
 	return {
 		type: types.FORMDATA_SET_QUERY,
 		data: query
+	};
+};
+export const formDataSetBet = (data) => {
+	return {
+		type: types.FORMDATA_SET_BET,
+		data: data
 	};
 };

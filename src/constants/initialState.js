@@ -8,6 +8,12 @@ export const initialState = {
 			country: '',
 			competition: '',
 			bets: []
+		},
+		selectedBet: {
+			market: '',
+			picks: '',
+			odds: { id: '', value: 0, bookieId: '' }
 		}
-	}
+	},
+	isLoading: false
 };

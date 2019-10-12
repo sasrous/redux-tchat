@@ -4,17 +4,29 @@ import './form.scss';
 import { connect } from 'react-redux';
 import { formDataOperations } from '../redux/ducks/formData';
 
-const { getFormData, setQuery, setFormData } = formDataOperations;
+const { getFormData, setQuery, setBet, setFormData } = formDataOperations;
 
-const Form = ({ setQuery, setFormData, formDataState, getFormData }) => {
-	const { formData, query, selectedMatch } = formDataState;
+const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => {
+	const { formData, query, selectedMatch, selectedBet } = formDataState;
+
 	const handleChange = (event) => {
 		setQuery(event.target.value);
 		getFormData(event.target.value);
 		setFormData();
 	};
 	const selectMatch = (match) => {
+		setQuery(match.name);
 		setFormData(match);
+	};
+	const clearMatch = () => {
+		setFormData();
+		setQuery('');
+	};
+	const saveBetDetail = (label, value) => {
+		setBet({
+			label: label,
+			value: value
+		});
 	};
 	const renderAutocomplete = () => {
 		return formData && formData.length > 0 && query.length > 0 ? (
@@ -37,6 +49,38 @@ const Form = ({ setQuery, setFormData, formDataState, getFormData }) => {
 			<div>no matches placeholder</div>
 		);
 	};
+	const renderDropdown = (label) => {
+		if (selectedMatch.bets) {
+			switch (label) {
+				case 'market':
+					return selectedMatch.bets.map((bet) => {
+						return <button onClick={() => saveBetDetail(label, bet[label])}> {bet[label]}</button>;
+					});
+				case 'picks':
+					return selectedMatch.bets.map((bet) => {
+						return bet[label][0]
+							.split(' ')
+							.map((pick) => <button onClick={() => saveBetDetail(label, pick)}> {pick}</button>);
+					});
+				case 'odds':
+					return selectedMatch.bets.map((bet) => {
+						return bet[label].map((odd) => {
+							return (
+								<button
+									onClick={() =>
+										saveBetDetail(label, { id: odd.id, value: odd.value, bookieId: bet.bookieId })}
+									id={odd.id}
+								>
+									{odd.value.toString()}
+								</button>
+							);
+						});
+					});
+				default:
+					return '';
+			}
+		}
+	};
 	return (
 		<div className="content">
 			<CardTitle>APUESTA</CardTitle>
@@ -45,6 +89,7 @@ const Form = ({ setQuery, setFormData, formDataState, getFormData }) => {
 					<p>Partido</p>
 					<input placeholder=" - " value={query} onChange={handleChange} />
 					{renderAutocomplete()}
+					<button onClick={() => clearMatch()}>X</button>
 				</Col>
 			</Row>
 			<Row>
@@ -65,15 +110,22 @@ const Form = ({ setQuery, setFormData, formDataState, getFormData }) => {
 			<Row>
 				<Col xs={4} xl={4}>
 					<p>Mercado</p>
-					<input placeholder="..." />
+					<input placeholder="..." value={selectedBet.market} readOnly />
+					{renderDropdown('market')}
 				</Col>
 				<Col xs={4} xl={4}>
 					<p>Pick</p>
-					<input placeholder="..." />
+					<input placeholder="..." value={selectedBet.picks} readOnly />
+					{renderDropdown('picks')}
 				</Col>
 				<Col xs={4} xl={4}>
 					<p>Odds</p>
-					<input placeholder="..." />
+					<input
+						placeholder="..."
+						value={`${selectedBet.odds.value} - ${selectedBet.odds.bookieId}`}
+						readOnly
+					/>
+					{renderDropdown('odds')}
 				</Col>
 			</Row>
 		</div>
@@ -84,6 +136,6 @@ const mapStateToProps = ({ formDataState }) => ({
 	formDataState
 });
 
-const mapDispatchToProps = { getFormData, setQuery, setFormData };
+const mapDispatchToProps = { getFormData, setQuery, setBet, setFormData };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form);
