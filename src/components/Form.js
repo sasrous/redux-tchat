@@ -50,30 +50,36 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 		);
 	};
 	const renderDropdown = (label) => {
-		if (selectedMatch.bets) {
+		if (selectedMatch.bets && selectedMatch.bets.length > 0) {
+			const { bets } = selectedMatch;
 			switch (label) {
 				case 'market':
-					return selectedMatch.bets.map((bet) => {
-						return <button onClick={() => saveBetDetail(label, bet[label])}> {bet[label]}</button>;
-					});
+					return <button onClick={() => saveBetDetail(label, bets[0][label])}> {bets[0][label]}</button>;
+
 				case 'picks':
-					return selectedMatch.bets.map((bet) => {
-						return bet[label][0]
-							.split(' ')
-							.map((pick) => <button onClick={() => saveBetDetail(label, pick)}> {pick}</button>);
-					});
+					return bets[0][label][0]
+						.split(', ')
+						.map((pick) => <button onClick={() => saveBetDetail(label, pick)}> {pick}</button>);
+
 				case 'odds':
 					return selectedMatch.bets.map((bet) => {
 						return bet[label].map((odd) => {
-							return (
-								<button
-									onClick={() =>
-										saveBetDetail(label, { id: odd.id, value: odd.value, bookieId: bet.bookieId })}
-									id={odd.id}
-								>
-									{odd.value.toString()}
-								</button>
-							);
+							console.log(odd, selectedBet.picks, odd.id === selectedBet.picks);
+							if (odd.id === selectedBet.picks) {
+								return (
+									<button
+										onClick={() =>
+											saveBetDetail(label, {
+												id: odd.id,
+												value: odd.value,
+												bookieId: bet.bookieId
+											})}
+										id={odd.id}
+									>
+										{odd.value.toString()}
+									</button>
+								);
+							}
 						});
 					});
 				default:
