@@ -19,11 +19,11 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 		setQuery(event.target.value);
 		getFormData(event.target.value);
 		setFormData();
-		saveBetDetail();
 	};
 	const selectMatch = (match) => {
 		setQuery(match.name);
 		setFormData(match);
+		saveBetDetail();
 	};
 	const clearMatch = () => {
 		setFormData();
@@ -103,7 +103,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 		<div className="content">
 			<CardTitle className="main-title">Apuesta</CardTitle>
 			<Row>
-				<Col xs={12} md={4}>
+				<Col xs={12} md={12}>
 					<p>Partido</p>
 					<div className="autocomplete">
 						<input

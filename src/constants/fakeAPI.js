@@ -44,7 +44,7 @@ export const fakeAPI = {
 					{
 						bookieId: 'hill',
 						market: '12',
-						picks: [ '1,2' ],
+						picks: [ '1, 2' ],
 						odds: [ { id: '1', value: 0.8 }, { id: '2', value: 0.9 } ]
 					}
 				]
