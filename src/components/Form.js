@@ -168,7 +168,13 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 						<InputLabel htmlFor="market-id">Pick</InputLabel>
 						<Select
 							value={selectedBet.picks}
-							onChange={(e) => saveBetDetail('picks', e.target.value)}
+							onChange={(e) => {
+								//if odds picked, reset
+								if (selectedBet.odds) {
+									saveBetDetail('odds', '');
+								}
+								saveBetDetail('picks', e.target.value);
+							}}
 							inputProps={{
 								name: 'picks',
 								id: 'picks-id'
