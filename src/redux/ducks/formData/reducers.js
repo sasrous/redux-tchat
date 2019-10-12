@@ -2,10 +2,8 @@ import * as types from './types';
 import { initialState } from '../../../constants';
 
 const formDataReducer = (state = initialState, action) => {
-	console.log(action);
 	switch (action.type) {
 		case types.FORMDATA_SET_QUERY:
-			console.log(action, 'action');
 			return {
 				...state,
 				query: action.data

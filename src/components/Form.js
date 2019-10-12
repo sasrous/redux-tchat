@@ -38,9 +38,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 	};
 	const handleOddSubmit = (e) => {
 		const { bets } = selectedMatch;
-
 		bets.map((bet) => {
-			console.log(bet, e);
 			if (bet.bookieId === e) {
 				saveBetDetail('odds', {
 					bookieId: e,
@@ -48,22 +46,13 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 					value: bet.odds[selectedBet.picks - 1].value
 				});
 			}
+			return null;
 		});
 	};
 	const renderAutocomplete = () => {
 		return formData && formData.length > 0 && query.length > 0
 			? formData.map((match) => (
-					<button
-						key={match.name}
-						className={
-							match.name === selectedMatch.name ? (
-								'autocomplete__suggestion--selected autocomplete__suggestion'
-							) : (
-								'autocomplete__suggestion'
-							)
-						}
-						onClick={() => selectMatch(match)}
-					>
+					<button key={match.name} className={'autocomplete__suggestion'} onClick={() => selectMatch(match)}>
 						{match.name}
 					</button>
 				))
@@ -80,7 +69,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 						if (marketarr.indexOf(bet.market) < 0) {
 							marketarr.push(bet.market);
 							return <MenuItem value={bet.market}>{bet.market}</MenuItem>;
-						}
+						} else return null;
 					});
 				case 'picks':
 					let pickarr = [];
@@ -89,7 +78,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 							if (pickarr.indexOf(pick) < 0) {
 								pickarr.push(pick);
 								return <MenuItem value={pick}>{pick}</MenuItem>;
-							}
+							} else return null;
 						});
 					});
 
@@ -102,7 +91,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 										value={bet.bookieId}
 									>{`${odd.value.toString()} - ${bet.bookieId}`}</MenuItem>
 								);
-							} else return;
+							} else return null;
 						});
 					});
 				default:
@@ -175,7 +164,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 					</FormControl>
 				</Col>
 				<Col xs={12} md={4} className="dropdown">
-					<FormControl disabled={!selectedBet.market}>
+					<FormControl disabled={!selectedBet.market || !selectedMatch.name}>
 						<InputLabel htmlFor="market-id">Pick</InputLabel>
 						<Select
 							value={selectedBet.picks}
@@ -190,7 +179,7 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 					</FormControl>
 				</Col>
 				<Col xs={12} md={4} className="dropdown">
-					<FormControl disabled={!selectedBet.picks}>
+					<FormControl disabled={!selectedBet.picks || !selectedMatch.name}>
 						<InputLabel htmlFor="odds-id">Odds</InputLabel>
 						<Select
 							value={selectedBet.odds.bookieId}

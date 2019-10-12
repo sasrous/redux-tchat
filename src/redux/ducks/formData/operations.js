@@ -14,7 +14,6 @@ export const getFormData = (query) => async (dispatch) => {
 
 	try {
 		const response = await formDataService.getFormData(query);
-		console.log('response: ', response);
 		dispatch(actions.formDataGetSuccess(response));
 		response && dispatch(setFormData(response));
 	} catch (error) {
