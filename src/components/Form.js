@@ -194,6 +194,29 @@ const Form = ({ setQuery, setBet, setFormData, formDataState, getFormData }) => 
 					</FormControl>
 				</Col>
 			</Row>
+
+			<Row className="json">
+				<Col>
+					<p>
+						{'{ '}query : {formDataState.query}
+					</p>
+					<p>name : {selectedMatch.name}</p>
+					<p>sport: {selectedMatch.sport}</p>
+					<p>country: {selectedMatch.country}</p>
+					<p>competition: {selectedMatch.competition}</p>
+
+					<p>market: {selectedBet.market}</p>
+					<p>pick: {selectedBet.picks}</p>
+					<p>odds: {'{'}</p>
+					<div style={{ marginLeft: '20px' }}>
+						<p>id: {selectedBet.odds.id}</p>
+						<p>bookieId: {selectedBet.odds.bookieId}</p>
+						<p>value: {selectedBet.odds.value}</p>
+						<p> {' }'}</p>
+					</div>
+					<p> {' }'}</p>
+				</Col>
+			</Row>
 		</div>
 	);
 };
