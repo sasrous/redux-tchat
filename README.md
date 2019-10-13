@@ -1,11 +1,11 @@
-<<<<<<< HEAD
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 ---
 
 ## Install
 
-    $ git clone https://github.com/ORG/PROJECT.git
-    $ cd PROJECT
+    $ git clone https://github.com/sasrous/redux-tchat.git
+    $ cd redux-tchat
     $ npm install
 
 ## Available Scripts
